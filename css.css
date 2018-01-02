@@ -1,0 +1,53 @@
+* {
+    text-align: center;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+    vertical-align: top;
+}
+body {
+    background-color: #dff0f0;
+}
+.ayuda{margin: 10px;}
+.ayuda > * {display: block;}
+.content > div {
+    display: inline-block;
+    margin: 10px;
+}
+
+/** Sudoku Style **/
+.sudoku > tr:nth-child(4) > td, .sudoku > tr:nth-child(7) > td{border-top: 3px solid;}
+.sudoku > tr > td:nth-child(4), .sudoku > tr > td:nth-child(7){border-left: 3px solid;}
+.hidden{
+	visibility: hidden;
+}
+.sudoku input {
+    width: 68px;
+    height: 68px;
+    background: rgba(0,0,0,0);
+		font-size: 50px;
+}
+.sudoku table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 68px;
+    font-size: 20px;
+}
+.sudoku {
+    border-color: #ffc283;
+    border-style: solid;
+    border-width: 1px;
+    background: #fff;
+}
+#helpConfig * {
+    display: inline-block;
+    margin: 5px;
+}
+#helpConfig label {
+    display: block;
+}
+.hiddenHelp .mini {
+    visibility: hidden;
+}
