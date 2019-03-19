@@ -1,11 +1,9 @@
 /** Sudoku V1.0
-Falta agregar checkbox para autocomplete
 **/
 
-document.body.appendChild((new function(){
+(new function(){
 	// Config
 	var ts = this,
-		pepa = this,
 		table = [],
 		update_active = true,
 		help_level = 0,
@@ -21,35 +19,29 @@ document.body.appendChild((new function(){
 		set_arr = [];
 
 	// Visual
-	var a;
-	var parent_element = newNode("div")
-		element = newNode("table", ((a = document.getElementById("outSudoku"))?a:parent_element)).setAttr("class", "sudoku"),
-		config_element = newNode("div", null),
-		help_element = newNode("input", a = ((a = document.getElementById("helpConfig"))?a:config_element), {"value": help_level, "min": help_minLevel, "max": help_maxLevel}).setAttr("type", "range"),
-		help_input = newNode("input", a, {"value": help_level, "min": help_minLevel, "max": help_maxLevel}).setAttr("type", "number"),
-		show_label = newNode("label", a, {"innerHTML": "Mostrar Cuadricula: "}),
-		show_element = newNode("input", show_label, {"type": "checkbox", "checked":show_mini}),
-		autocomplete_label = newNode("label", a, {"innerHTML": "Autocompletar: "}),
-		autocomplete_element = newNode("input", autocomplete_label, {"type": "checkbox", "checked":autocomplete}),
-		load_input = newNode("input", a = ((a = document.getElementById("saveConfig"))?a:config_element)),
-		load_element = newNode("button", a, {"innerHTML": "Load"}),
-		save_element = newNode("button", a, {"innerHTML": "Save"}),
-		reset_element = newNode("button", a, {"innerHTML": "Reset"});
-		random_element = newNode("button", a, {"innerHTML": "Cargar sudoku aleatorio"});
+	var element = newNode("table", document.getElementById("outSudoku")).setAttr("class", "sudoku"),
+
+		help_range = document.getElementById("range_help"),
+		help_input = document.getElementById("range_help_number"),
+		
+		autocomplete_element = document.getElementById("check_autocomplete"),
+		
+		check_grid = document.getElementById("check_grid"),
+		
+		load_input = document.getElementById("load_text"),
+		load_element = document.getElementById("load"),
+		save_element = document.getElementById("save"),
+		reset_element = document.getElementById("reset"),
+		random_element = document.getElementById("load_random");
+		verificar_element = document.getElementById("verificar");
+	
 
 
 	this.init = function(){
-		//Load Config
-		document.body.setAttribute("class", "level"+help_level);
+
 		createCells();
 
-		//Load Events
-		help_input.onchange = help_element.onchange = function(e){
-			help_input.value = help_element.value = help_level = e.target.value;
-			ts.update();
-		};
-		show_element.onchange = function(e){element.setAttribute("class", "sudoku"+((show_element.checked)?"":" hiddenHelp"));};
-		autocomplete_element.onchange = function(e){autocomplete = autocomplete_element.checked;};
+		//Event Save/Load
 		save_element.onclick = function(){
 			var x, y, r = "";
 			for(x = 0; x < 9; ++x){
@@ -59,8 +51,8 @@ document.body.appendChild((new function(){
 			}
 			load_input.value = r;
 		};
+
 		load_element.onclick = function(){
-			console.time("check");
 			var arr = load_input.value.split(""), x, y;
 			for(var index = 0; index < arr.length; ++index){
 				if(arr[index] != "0"){
@@ -69,32 +61,60 @@ document.body.appendChild((new function(){
 					table[x][y].set(arr[index]);
 				}
 			}
-			console.timeEnd("check");
 		};
+
 		reset_element.onclick = function(){
-			table = [],missing = [[],[],[],];
+			table = [], missing = [[],[],[]];
 			element.innerHTML = "";
 			createCells();
 		};
+
 		random_element.onclick = function(){
 			var a = autocomplete, b = help_level;
-			autocomplete = true;
+			autocomplete = false;
 			help_level = 0;
 			reset_element.onclick();
-			window.load(sudo[Math.floor(Math.random()*sudo.length)]);
+			window.load(sudo.random());
 			autocomplete = a;
 			help_level = b;
 		};
+
 		window.load = function(v){
 			load_input.value = v;
 			load_element.onclick();
 		};
+		verificar_element.onclick = verificar;
+
+		//Event Help
+		help_input.onchange = help_range.onchange = function(e){
+			help_input.value = help_range.value = help_level = e.target.value;
+			ts.update();
+		};
+
+		check_grid.onchange = function(){
+			element.setAttribute("class", "sudoku"+((check_grid.checked)?"":" hiddenHelp"));
+		};
+
+		autocomplete_element.onchange = function(){autocomplete = autocomplete_element.checked;};
+		
+
+		//Load Config
+		help_input.onchange({target:{value:help_level}});
+		help_range.min = help_input.min = help_minLevel;
+		help_range.max = help_input.max = help_maxLevel;
+
+		autocomplete_element.checked = autocomplete;
+		
+		check_grid.checked = show_mini;
+		check_grid.onchange();
+
 		update_active = false;
-		return parent_element;
 	};
+
+	
 	// Create all cell
 	function createCells(){
-		var x, y, o, tr, temp, b;
+		var x, y, tr, temp, b;
 		for(x = 0; x < 9; ++x){
 			table[x] = [];
 			tr = newNode("tr");
@@ -126,7 +146,7 @@ document.body.appendChild((new function(){
 	};
 	function checkAll(){
 		if(help_level < 1){return;}
-		var a, b, c, d, e, f, g, h, i, j, k, h, l, m, n;
+		var a, b, c, d, e, f, g, h, i, j, k, h;
 		for(a in missing){
 			for(b in missing[a]){
 				c = [];
@@ -178,6 +198,16 @@ document.body.appendChild((new function(){
 		}
 	};
 	function set(o){if(autocomplete){o.o.set(o.v)};}
+	function verificar(){
+		var x, y, r = true;
+		for(x = 0; x < 9; ++x){
+			for(y = 0; y < 9; ++y){
+				if(!table[x][y].verificar()){r = false; break;}
+
+			}
+		}
+		console.log(r);
+	}
 	function Cell(x, y, b, tsp){
 		var missing_index = [b, x, y],
 		 ts = this,
@@ -192,21 +222,35 @@ document.body.appendChild((new function(){
 			input = newNode("input", td ,{"maxlength": 1});
 
 
-		var a, b, c, d;
+		var a, b, c;
 		for(a = 0; a < 3; ++a){
 			c = newNode("tr", mini);
 			for(b = 1; b <=3; ++b){
 				minid[a*3+b] = d = newNode("td", c, {"innerHTML": a*3+b});
 			}
 		}
+		input.onkeydown = function(event){
+			if(/^[0-9]*$/.test(event.key)){
+				input.value = "";
+			}else if(event.key != "Backspace"){
 
-		input.onchange = function(){ts.set(input.value);};
-		input.onkeyup = function(a){
+				event.returnValue = false;
+			}
+		};
+		input.onchange = function(){
+			if(input.value == 0){ input.value ="";}
+			ts.set(input.value);
+		};
+		input.onkeyup = function(event){
 			var ny = y; nx = x;
-			switch(a.key){
+			switch(event.key){
+				case "a":
 				case "ArrowLeft": --ny; break;
+				case "d":
 				case "ArrowRight": ++ny; break;
+				case "w":
 				case "ArrowUp": --nx; break;
+				case "s":
 				case "ArrowDown": ++nx; break;
 			}
 			if(nx < 0){nx = 8;}
@@ -237,17 +281,56 @@ document.body.appendChild((new function(){
 		};
 		this.getMini = function(){return (setted)?[]:missing_cell;};
 		this.getValue = function(){return (input.value)?input.value:0;};
+		this.verificar = function(){
+			var index, second_index;
+			for(index = 0; index < 9; ++index){
+				if(!input.value){return false;}
+				if(ts != table[missing_index[1]][index] && ts.getValue == table[missing_index[1]][index].getValue){return false;}
+				if(ts != table[index][missing_index[2]] && ts.getValue == table[index][missing_index[2]].getValue){return false;}
+			}
+			return true;
+		}
 	}
-}).init())
+}).init();
 
-var sudo = [];
+var sudo = { 
+	rand: [],
+	nivel:[[],[],[],[],[]],
+	add: function(sudoku, level){
+		this.rand.push(sudoku);
+		if(level){
+			this.nivel[level].push(sudoku);
+		}
+	},
+	random: function(level){
+		console.log("e");
+		if(level){
+			return this.nivel[level][Math.floor(Math.random(this.nivel[level].length))];
+		}else{
+			console.log(this.rand);
+			return this.rand[Math.floor(Math.random()*this.rand.length)];
+		}
+	}
+
+};
+
+document.getElementById("content").setAttribute("style", "grid-template-columns:"+(Math.max(650, window.innerHeight)-30)+"px 1fr");
+document.getElementById("outSudoku").setAttribute("style", "height:"+(Math.max(650, window.innerHeight)-30)+"px");
+
+
 // Level 1
-
-
+sudo.add("890500037400003006000010000080000600001050200002000090000090000700600003360007084", 1); //249
+sudo.add("030790800000000010200300705050000009300804002700000040501009007040000000009041060", 1); //248
+sudo.add("000000002020004006000089100060300200052040870009002060004790000700100030300000000", 1); //247
 // Level 2
-sudo.push("200000040035600800670841000050300000060209050000008070000184039008003260010000005"); //243
-sudo.push("560028000032760900070000000023000001000245000900000270000000060006079510000810032"); //244
+sudo.add("200000040035600800670841000050300000060209050000008070000184039008003260010000005", 2); //243
+sudo.add("560028000032760900070000000023000001000245000900000270000000060006079510000810032", 2); //244
+sudo.add("200090500860000010030070006080900200000603000001007040600040070040000021007020004", 2); //246
+sudo.add("000050000370800014100006003010000800009080500002000060700900006480001037000060000", 2); //245
 
 // Level 3
-sudo.push("080074000050031000004900030000010480740000016021080000090007800000520060000690020");
-sudo.push("630050020009000005405080700000120000003894100000067000001070809200000400080040051");
+sudo.add("080074000050031000004900030000010480740000016021080000090007800000520060000690020", 3);
+sudo.add("630050020009000005405080700000120000003894100000067000001070809200000400080040051", 3);
+
+// Level 4 (Varias soluciones)
+sudo.add("000001740000500000060890000400000900030005000205000800300060021108000050000007000", 4); //250

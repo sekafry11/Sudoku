@@ -8,18 +8,36 @@
 </head>
 <body>
 <div class="top"></div>
-<div class="content">
-  <div class="lefth" id="outSudoku"></div>
+<div id="content">
+  <div class="left" id="outSudoku"></div>
   <div class="right">
-    <div id="saveConfig"></div>
-    <div class="ayuda">
-      <p>Niveles de ayuda:</p>
-      <p><b>0</b> -&#x3e; Sin ayuda.</p>
-      <p><b>1</b> -&#x3e; Rellena donde solo puede ir un número (Nivel: Básico)</p>
-      <p><b>2</b> -&#x3e; Rellena si el numero solo puede ir en una casilla (Nivel: Intermedio)</p>
-      <p><b>3</b> -&#x3e; Más ayuda en vertical y horizontal (Nivel: Difícil)</p>
-      <p id="helpConfig"></p>
-    </div>
+    <ul type="none">
+      <li>
+        <label for="check_save">Save/Load</label><input type="checkbox" id="check_save">
+        <ul>
+          <li><input type="text" id="load_text"></li>
+          <li><button id="load">Load</button></li>
+          <li><button id="save">Save</button></li>
+          <li><button id="reset">Reset</button></li>
+          <li><button id="load_random">Cargar sudoku aleatorio</button></li>
+          <li><button id="verificar">Verificar</button></li>
+        </ul>
+      </li>
+      <li>
+        <label for="check_autocomplete">Autocompletar</label><input type="checkbox" id="check_autocomplete">
+        <ul>
+            <input min="0" max="3" type="range" id="range_help">
+            <input min="0" max="3" type="number"id ="range_help_number">
+            <li>Sin ayuda</li>
+            <li>Rellena donde solo puede ir un número (Nivel: Básico)</li>
+            <li>Rellena si el numero solo puede ir en una casilla (Nivel: Intermedio)</li>
+            <li>Más ayuda en vertical y horizontal (Nivel: Difícil)</li>
+        </ul>
+      </li>
+      <li>
+        <label>Mostrar Cuadricula</label><input type="checkbox" id="check_grid">
+      </li>
+    </ul>
   </div>
 </div>
 <div class="bottom"></div>
