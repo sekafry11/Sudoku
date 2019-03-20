@@ -1,5 +1,4 @@
-/** Sudoku V1.0
-**/
+/** Sudoku V1.1 **/
 
 (new function(){
 	// Config
@@ -9,6 +8,9 @@
 		help_level = 0,
 		help_maxLevel = 3,
 		help_minLevel = 0,
+		level_sudo_min = 1,
+		level_sudo_max = 4,
+		level_sudo_init = 1,
 		autocomplete = true,
 		show_mini = true,
 		missing = [
@@ -17,6 +19,7 @@
 			[],
 		],
 		set_arr = [];
+		last_poin = {x:0, y:0};
 
 	// Visual
 	var element = newNode("table", document.getElementById("outSudoku")).setAttr("class", "sudoku"),
@@ -32,7 +35,10 @@
 		load_element = document.getElementById("load"),
 		save_element = document.getElementById("save"),
 		reset_element = document.getElementById("reset"),
-		random_element = document.getElementById("load_random");
+		random_element = document.getElementById("load_random"),
+		level_range = document.getElementById("level_range"),
+		level_number = document.getElementById("level_number"),
+		level_load = document.getElementById("level_load"),
 		verificar_element = document.getElementById("verificar");
 	
 
@@ -42,26 +48,8 @@
 		createCells();
 
 		//Event Save/Load
-		save_element.onclick = function(){
-			var x, y, r = "";
-			for(x = 0; x < 9; ++x){
-				for(y = 0; y < 9; ++y){
-					r += table[x][y].getValue();
-				}
-			}
-			load_input.value = r;
-		};
-
-		load_element.onclick = function(){
-			var arr = load_input.value.split(""), x, y;
-			for(var index = 0; index < arr.length; ++index){
-				if(arr[index] != "0"){
-					x = Math.floor(index/9);
-					y = index%9;
-					table[x][y].set(arr[index]);
-				}
-			}
-		};
+		save_element.onclick = function(){load_input.value = tabletoString();};
+		load_element.onclick = function(){reset_element.onclick();stringtoTable(load_input.value)};
 
 		reset_element.onclick = function(){
 			table = [], missing = [[],[],[]];
@@ -77,6 +65,17 @@
 			window.load(sudo.random());
 			autocomplete = a;
 			help_level = b;
+		};
+
+		level_number.value = level_range.value = level_sudo_init;
+		level_number.max = level_range.max = level_sudo_max;
+		level_number.min = level_range.min = level_sudo_min;
+		level_number.onchange = level_range.onchange = function(event){
+			level_number.value = level_range.value = event.target.value;
+		};
+		level_load.onclick = function (){
+			load_input.value = sudo.random(level_number.value);
+			load_element.onclick();
 		};
 
 		window.load = function(v){
@@ -207,7 +206,41 @@
 			}
 		}
 		console.log(r);
+	};
+	function tabletoString(){
+		var x, y, r = "";
+		for(x = 0; x < 9; ++x){
+			for(y = 0; y < 9; ++y){
+				r += table[x][y].getValue();
+			}
+		}
+		return r;
 	}
+	function stringtoTable(text){
+		var arr = text.split(""), x, y;
+		for(var index = 0; index < arr.length; ++index){
+			if(arr[index] != "0"){
+				x = Math.floor(index/9);
+				y = index%9;
+				table[x][y].set(arr[index]);
+			}
+		}
+	}
+	function resetCuadriculas(){
+		var tabla = tabletoString();
+		reset_element.onclick();
+		stringtoTable(tabla);
+		table[last_poin.x][last_poin.y].setFocus();
+	};
+
+
+	/**
+	 * Celda
+	 * @param {Number} x Coor x
+	 * @param {Number} y Coor y
+	 * @param {Number} b Bloque
+	 * @param {Cell} tsp Cell parent
+	 */
 	function Cell(x, y, b, tsp){
 		var missing_index = [b, x, y],
 		 ts = this,
@@ -257,6 +290,7 @@
 			if(nx > 8){nx = 0;}
 			if(ny < 0){ny = 8;}
 			if(ny > 8){ny = 0;}
+			last_poin = {x: nx, y: ny};
 			table[nx][ny].setFocus();
 		};
 		this.setFocus = function(){input.focus();};
@@ -289,7 +323,7 @@
 				if(ts != table[index][missing_index[2]] && ts.getValue == table[index][missing_index[2]].getValue){return false;}
 			}
 			return true;
-		}
+		};
 	}
 }).init();
 
@@ -305,9 +339,8 @@ var sudo = {
 	random: function(level){
 		console.log("e");
 		if(level){
-			return this.nivel[level][Math.floor(Math.random(this.nivel[level].length))];
+			return this.nivel[level][Math.floor(Math.random()*this.nivel[level].length)];
 		}else{
-			console.log(this.rand);
 			return this.rand[Math.floor(Math.random()*this.rand.length)];
 		}
 	}
@@ -317,11 +350,12 @@ var sudo = {
 document.getElementById("content").setAttribute("style", "grid-template-columns:"+(Math.max(650, window.innerHeight)-30)+"px 1fr");
 document.getElementById("outSudoku").setAttribute("style", "height:"+(Math.max(650, window.innerHeight)-30)+"px");
 
-
+//Ultimo 242
 // Level 1
 sudo.add("890500037400003006000010000080000600001050200002000090000090000700600003360007084", 1); //249
 sudo.add("030790800000000010200300705050000009300804002700000040501009007040000000009041060", 1); //248
 sudo.add("000000002020004006000089100060300200052040870009002060004790000700100030300000000", 1); //247
+sudo.add("002500360060024000000000001000041907900000004104230000600000000000810050025007600", 1); //242
 // Level 2
 sudo.add("200000040035600800670841000050300000060209050000008070000184039008003260010000005", 2); //243
 sudo.add("560028000032760900070000000023000001000245000900000270000000060006079510000810032", 2); //244
