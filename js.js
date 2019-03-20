@@ -303,7 +303,7 @@
 					input.value = a;
 					setted = true;
 					mini.setAttribute("class", "hidden");
-					sleep(2	00).then(() => {
+					sleep(200).then(() => {
 						for(var b = 0; b < 3; ++b){
 							missing[b][missing_index[b]].splice(missing[b][missing_index[b]].indexOf(ts), 1);
 	
