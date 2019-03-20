@@ -9,7 +9,7 @@
 		help_maxLevel = 3,
 		help_minLevel = 0,
 		level_sudo_min = 1,
-		level_sudo_max = 4,
+		level_sudo_max = 3,
 		level_sudo_init = 1,
 		autocomplete = true,
 		show_mini = true,
@@ -196,7 +196,7 @@
 			arr[a].miniHidden(value);
 		}
 	};
-	function set(o){if(autocomplete){o.o.set(o.v)};}
+	function set(o){if(autocomplete){o.o.set(o.v, true)};}
 	function verificar(){
 		var x, y, r = true;
 		for(x = 0; x < 9; ++x){
@@ -295,16 +295,31 @@
 		};
 		this.setFocus = function(){input.focus();};
 		this.getTd = function(){return td;};
-		this.set = function(a){
-			if(setted){return false;}
-			setted = true;
-			input.value = a;
-			mini.setAttribute("class", "hidden");
-			for(var b = 0; b < 3; ++b){
-				missing[b][missing_index[b]].splice(missing[b][missing_index[b]].indexOf(ts), 1);
-				delMiniArr(a, missing[b][missing_index[b]]);
+		this.set = function(a, auto){
+			if(a){
+				if(setted && !auto){ // a && setted
+					resetCuadriculas();
+				}else{ // a && !setted
+					input.value = a;
+					setted = true;
+					mini.setAttribute("class", "hidden");
+					sleep(2	00).then(() => {
+						for(var b = 0; b < 3; ++b){
+							missing[b][missing_index[b]].splice(missing[b][missing_index[b]].indexOf(ts), 1);
+	
+							delMiniArr(a, missing[b][missing_index[b]]);
+						}
+						ts_parent.update();
+					});
+					
+				}
+			}else{
+				if(setted){ // !a && setted
+					input.value = "";
+					resetCuadriculas();
+				}else{ // !a && !setted
+				}
 			}
-			ts_parent.update();
 		};
 		this.miniHidden = function(a){
 			if(setted){return false;}
@@ -324,6 +339,9 @@
 			}
 			return true;
 		};
+	}
+	function sleep (time) {
+		return new Promise((resolve) => setTimeout(resolve, time));
 	}
 }).init();
 
@@ -361,10 +379,10 @@ sudo.add("2000000400356008006708410000503000000602090500000080700001840390080032
 sudo.add("560028000032760900070000000023000001000245000900000270000000060006079510000810032", 2); //244
 sudo.add("200090500860000010030070006080900200000603000001007040600040070040000021007020004", 2); //246
 sudo.add("000050000370800014100006003010000800009080500002000060700900006480001037000060000", 2); //245
+sudo.add("080074000050031000004900030000010480740000016021080000090007800000520060000690020", 2);
+sudo.add("630050020009000005405080700000120000003894100000067000001070809200000400080040051", 2);
 
 // Level 3
-sudo.add("080074000050031000004900030000010480740000016021080000090007800000520060000690020", 3);
-sudo.add("630050020009000005405080700000120000003894100000067000001070809200000400080040051", 3);
 
 // Level 4 (Varias soluciones)
-sudo.add("000001740000500000060890000400000900030005000205000800300060021108000050000007000", 4); //250
+sudo.add("000001740000500000060890000400000900030005000205000800300060021108000050000007000", 3); //250

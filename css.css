@@ -64,7 +64,7 @@ ul ul {
     transition: 1s all;
 }
 ul input[type="checkbox"]:checked+ul {
-    height: 120px;
+    height: 150px;
 }
 .right > ul > li {
     border: 1px solid;
